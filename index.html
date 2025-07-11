@@ -15,20 +15,47 @@
         <div class="container mt-5">
             <div class="accordion" id="accordion-contacts">
                 <div class="accordion-item">
+                        <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-contacts" aria-expanded="true" aria-controls="collapse-contacts">
+                            Contacts List
+                        </button>
+                    </h2>
+                    <div id="collapse-contacts" class="accordion-collapse collapse show" data-bs-parent="#accordion-contacts">
+                        <div class="accordion-body">
+                            <ul id="contact-list" class="list-group">
+                                <!-- Contacts will be loaded here -->
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary m-3" id="load-contacts-btn">Load Contacts</button>
+                    </div>
+                </div>
+                <div class="accordion-item">
                     <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-contacts" aria-expanded="true" aria-controls="collapse-contacts">
-                        Contacts List
-                    </button>
-                </h2>
-                <div id="collapse-contacts" class="accordion-collapse collapse show" data-bs-parent="#accordion-contacts">
-                    <div class="accordion-body">
-                        <ul id="contact-list" class="list-group">
-                            <!-- Contacts will be loaded here -->
-                        </ul>
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-addcontacts" aria-expanded="true" aria-controls="collapse-addcontacts">
+                           Add Contact
+                        </button>
+                    </h2>
+                    <div id="collapse-addcontacts" class="accordion-collapse collapse show" data-bs-parent="#accordion-addcontacts">
+                        <div class="accordion-body">
+                            <form>
+                                <div class="mb-3">
+                                <label for="email-input" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="email-input" aria-describedby="emailHelp">
+                            </div>
+                            <div class="mb-3">
+                                <label for="username-input" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username-input" aria-describedby="usernameHelp">
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone-input" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="phone-input" aria-describedby="phoneHelp">
+                            </div>
+                                <button type="submit" class="btn btn-primary" id="add-contact-btn">Add Contact</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary mt-3" id="load-contacts-btn">Load Contacts</button>
         </div>
     </main>
 </body>
