@@ -56,7 +56,10 @@ async function addContact(event) {
     let response = await saveNewContact(newContact);
     if(response.ok) {
         console.log('Contact added successfully');
-        newContact.display();
+        let newContactItem = newContact.display();
+        newContactItem.addEventListener('click', (event) => {
+            newContact.deleteContact(event, newContactItem);
+        });
         clearInputs();
     } else {
         console.error(response.status + ' Error adding contact: ' + response.statusText);
@@ -72,6 +75,13 @@ async function saveNewContact(contact) {
         body: JSON.stringify(Users.toJSON(contact))
     });
     return response;
+}
+
+async function deleteContact(event, contact) {
+    deleteContactDisplay(event, contact);
+    let response = await fetch(`https://jsonplaceholder.typicode.com/users/${contact.id}`, {
+        method: 'DELETE'
+    });
 }
 
 function validateInputs(email, username, phone) {
