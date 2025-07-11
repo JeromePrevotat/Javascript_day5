@@ -13,6 +13,16 @@ export class Users {
         contactItem.className = 'contact-list-item';
         contactItem.innerHTML = `Username: ${this._username}, Email: ${this._email}, Phone: ${this._phone}`;
         contactList.appendChild(contactItem);
+        const trashIcon = document.createElement('i');
+        trashIcon.className = 'fa-solid fa-trash m-2';
+        trashIcon.style.cursor = 'pointer';
+        trashIcon.style.color = 'red';
+        contactItem.appendChild(trashIcon);
+        trashIcon.addEventListener('click', () => {
+            contactList.removeChild(contactItem);
+            trashIcon.remove();
+            console.log(`Contact deleted: ${this._username}`);
+        });
     }
 
     static toJSON(user) {

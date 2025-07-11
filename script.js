@@ -27,7 +27,6 @@ async function loadContacts() {
             data.forEach(user => {
                 const contact = new Users(user.username, user.email, user.phone);
                 contacts.push(contact);
-                console.log(`Contact loaded: ${contact.username}, ${contact.email}, ${contact.phone}`);
                 contact.display();
             });
             console.log('Contacts loaded successfully');
