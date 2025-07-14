@@ -25,6 +25,8 @@ async function loadContacts() {
             const data = await response.json();
             data.forEach(user => {
                 const contact = new Users(user.username, user.email, user.phone);
+                // Set the ID from the fetched data
+                contact.id = user.id;
                 addContactToDOM(contact);
             });
             console.log('Contacts loaded successfully');
@@ -58,6 +60,8 @@ async function addContact(event) {
         console.log('Contact added successfully');
         addContactToDOM(newContact);
         clearInputs();
+        // Set the ID of the new contact from the response
+        newContact.id = (await response.json()).id;
     } else {
         console.error(response.status + ' Error adding contact: ' + response.statusText);
     }
@@ -87,10 +91,19 @@ async function saveNewContact(contact) {
 }
 
 async function deleteContact(event, contact) {
-    contact.deleteContactDisplay(event);
+    event.preventDefault();
+    // Delete contact from the DB via API
     let response = await fetch(`https://jsonplaceholder.typicode.com/users/${contact.id}`, {
         method: 'DELETE'
     });
+    if(response.ok) {
+        console.log(`Contact ${contact.username} deleted successfully from the database.`);
+        // Delete contact from the DOM
+        contact.deleteContactDisplay(event);
+        console.log(`Contact ${contact.username} removed from the display.`);
+    } else {
+        console.error(`Error deleting contact ${contact.username}: ${response.status} ${response.statusText}`);
+    }
 }
 
 
