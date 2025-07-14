@@ -22,6 +22,11 @@ export class Users {
         contactItem.className = 'contact-list-item';
         contactItem.innerHTML = `Username: ${this._username}, Email: ${this._email}, Phone: ${this._phone}`;
         contactList.appendChild(contactItem);
+        const editIcon = document.createElement('i');
+        editIcon.className = 'fa-solid fa-pencil m-2';
+        editIcon.style.cursor = 'pointer';
+        editIcon.style.color = 'blue';
+        contactItem.appendChild(editIcon);
         const trashIcon = document.createElement('i');
         trashIcon.className = 'fa-solid fa-trash m-2';
         trashIcon.style.cursor = 'pointer';

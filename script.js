@@ -1,7 +1,8 @@
 import { Users } from './modules/users.js';
 
 const loadContactsBtn = document.getElementById('load-contacts-btn');
-const addContactBtn = document.getElementById('add-contact-btn');
+let addContactBtn = document.getElementById('add-contact-btn');
+const cancelEditContactBtn = document.getElementById('cancel-edit-contact-btn');
 const emailInput = document.getElementById('email-input');
 const usernameInput = document.getElementById('username-input');
 const phoneInput = document.getElementById('phone-input');
@@ -71,6 +72,10 @@ function addContactToDOM(contact){
     // Display it via User method and get its Dom Item as return
     if(contact instanceof Users) {
         let newContactItem = contact.display();
+        // Add event listener to the pencil icon
+        newContactItem.querySelector('.fa-pencil').addEventListener('click', (event) => editContactMode(event, contact, newContactItem));
+        console.log('Adding event listener to edit icon');
+        // Give the Dom Item to edit at the right place
         // Add event listener to the trash icon
         newContactItem.querySelector('.fa-trash').addEventListener('click', (event) => {
             console.log('Adding event listener to delete icon');
@@ -90,6 +95,77 @@ async function saveNewContact(contact) {
     return response;
 }
 
+async function editNewContact(contact){
+    // Update contact in the DB via API
+    let response = await fetch(`https://jsonplaceholder.typicode.com/users/${contact.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Users.toJSON(contact))
+    });
+    return response;
+}
+
+async function editContactMode(event, contact, contactItem) {
+    event.preventDefault();
+    // Show the cancel button
+    cancelEditContactBtn.style.display = 'inline-block';
+    // Preload Inputs with current contact data
+    console.log(`Editing contact: ${contact.username}`);
+    emailInput.value = contact.email;
+    usernameInput.value = contact.username;
+    phoneInput.value = contact.phone;
+
+    // Remove the addContactBtn event listener
+    addContactBtn = removeAllListeners(addContactBtn);
+    // Change the button text to "Update Contact"
+    addContactBtn.textContent = 'Update Contact';
+    // Switch event listener from add to edit
+    addContactBtn.addEventListener('click', (event) => editContact(event, contact, contactItem));
+}
+
+async function editContact(event, contact, contactItem){
+    event.preventDefault();
+    // Update new contact with the values from the inputs and keep its ID (mandatory for the API request)
+    let editedContact = new Users(usernameInput.value, emailInput.value, phoneInput.value);
+    editedContact.id = contact.id;
+    let response = await editNewContact(editedContact);
+    if(response.ok) {
+        console.log(`Contact ${editedContact.username} updated successfully in the database.`);
+        // Update contact in the DOM
+        // Saves edit and delete icons
+        const editIcon = contactItem.querySelector('.fa-pencil');
+        const deleteIcon = contactItem.querySelector('.fa-trash');
+        // Update the contact item text content
+        contactItem.textContent = `Username: ${editedContact.username}, Email: ${editedContact.email}, Phone: ${editedContact.phone}`;
+        // Re-append the icons to the updated contact item
+        contactItem.appendChild(editIcon);
+        contactItem.appendChild(deleteIcon);
+        // Clear Inputs for the next Addition/Edit
+        clearInputs();
+
+        // Switch the button back to its original state
+        addContactBtn = removeAllListeners(addContactBtn);
+        addContactBtn.textContent = 'Add Contact';
+        addContactBtn.addEventListener('click', (event) => addContact(event));
+    } else {
+        console.error(`Error updating contact ${editedContact.username}: ${response.status} ${response.statusText}`);
+    }
+}
+
+function cancelEdit(event) {
+    event.preventDefault();
+    // Switch the button back to its original state
+    addContactBtn = removeAllListeners(addContactBtn);
+    addContactBtn.textContent = 'Add Contact';
+    addContactBtn.addEventListener('click', (event) => addContact(event));
+    // Clear Inputs for the next Addition/Edit
+    clearInputs();
+    // Hide the button
+    cancelEditContactBtn.style.display = 'none';
+} 
+
 async function deleteContact(event, contact) {
     event.preventDefault();
     // Delete contact from the DB via API
@@ -105,7 +181,6 @@ async function deleteContact(event, contact) {
         console.error(`Error deleting contact ${contact.username}: ${response.status} ${response.statusText}`);
     }
 }
-
 
 
 function validateInputs(email, username, phone) {
@@ -131,8 +206,15 @@ function clearContactList(){
 function addEventListeners() {
     loadContactsBtn.addEventListener('click', loadContacts);
     addContactBtn.addEventListener('click', (event) => addContact(event));
+    cancelEditContactBtn.addEventListener('click', (event) => cancelEdit(event));
 
     console.log('Event listeners added');
+}
+
+function removeAllListeners(element) {
+    const newElement = element.cloneNode(true);
+    element.parentNode.replaceChild(newElement, element);
+    return newElement;
 }
 
 function main(){
