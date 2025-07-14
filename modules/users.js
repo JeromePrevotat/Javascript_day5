@@ -8,9 +8,9 @@ export class Users {
         this._phone = phone;
     }
 
-    deleteContactDisplay(event, contact) {
+    deleteContactDisplay(event) {
         event.preventDefault();
-        console.log(`Deleting contact: ${contact.username}`);
+        console.log(`Deleting contact: ${this._username}`);
         event.target.parentElement.remove();
         event.target.remove();
         console.log(`Contact deleted: ${this._username}`);

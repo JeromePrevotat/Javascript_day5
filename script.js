@@ -9,7 +9,6 @@ const contactList = document.getElementById('contact-list');
 
 
 async function loadContacts() {
-    const contacts = [];
     console.log('Loading contacts...');
 
     // Clear the contact list before loading new contacts
@@ -26,8 +25,7 @@ async function loadContacts() {
             const data = await response.json();
             data.forEach(user => {
                 const contact = new Users(user.username, user.email, user.phone);
-                contacts.push(contact);
-                contact.display();
+                addContactToDOM(contact);
             });
             console.log('Contacts loaded successfully');
             loadingMessage.remove();
@@ -51,18 +49,29 @@ async function addContact(event) {
                                                     .join('\n'));
         return;
     }
-
+    // User validation passed, create a new Users instance
     const newContact = new Users(username, email, phone);
+    // Save it to the DB via API
     let response = await saveNewContact(newContact);
+    // Response ok, add new contact to DOM and clear inputs for the next addition
     if(response.ok) {
         console.log('Contact added successfully');
-        let newContactItem = newContact.display();
-        newContactItem.addEventListener('click', (event) => {
-            newContact.deleteContact(event, newContactItem);
-        });
+        addContactToDOM(newContact);
         clearInputs();
     } else {
         console.error(response.status + ' Error adding contact: ' + response.statusText);
+    }
+}
+
+function addContactToDOM(contact){
+    // Display it via User method and get its Dom Item as return
+    if(contact instanceof Users) {
+        let newContactItem = contact.display();
+        // Add event listener to the trash icon
+        newContactItem.querySelector('.fa-trash').addEventListener('click', (event) => {
+            console.log('Adding event listener to delete icon');
+            deleteContact(event, contact);
+        });
     }
 }
 
@@ -78,11 +87,13 @@ async function saveNewContact(contact) {
 }
 
 async function deleteContact(event, contact) {
-    deleteContactDisplay(event, contact);
+    contact.deleteContactDisplay(event);
     let response = await fetch(`https://jsonplaceholder.typicode.com/users/${contact.id}`, {
         method: 'DELETE'
     });
 }
+
+
 
 function validateInputs(email, username, phone) {
     let error = null;
